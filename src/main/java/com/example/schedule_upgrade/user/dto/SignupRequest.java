@@ -10,6 +10,7 @@ import lombok.Getter;
 public class SignupRequest {
 
     @NotBlank
+    @Size(max=10)
     private String name;
 
     @NotBlank

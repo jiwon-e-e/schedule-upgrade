@@ -17,14 +17,13 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
-    @Size(max=10)
+    @Column(nullable = false, length = 10)
     private String name;
-    @NotBlank
-    @Column(unique = true, comment = "이메일은 중복될 수 없습니다.")
+
+    @Column(unique = true, nullable = false)
     private String email;
-    @NotBlank
-    //@Size(min=6, max=20)
+
+    @Column(nullable = false)
     private String pw;
 
     public User(String name, String email, String pw) {

@@ -17,9 +17,11 @@ public class Schedule extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Size(max=20)
+
+    @Column(nullable = false, length = 30)
     private String title;
-    @Size(max=200)
+
+    @Column(nullable = false, length = 200)
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

@@ -18,7 +18,7 @@ public class Comment extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Size(max= 100)
+    @Column(nullable = false)
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -33,9 +33,5 @@ public class Comment extends BaseEntity {
         this.content = content;
         this.schedule = schedule;
         this.user = user;
-    }
-
-    public void update(String content){
-        this.content = content;
     }
 }
