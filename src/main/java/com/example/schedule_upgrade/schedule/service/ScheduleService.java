@@ -72,7 +72,7 @@ public class ScheduleService {
                 ()-> new NonExistentException("존재하지 않는 일정입니다.")
         );
 
-        List<Comment> commentList = commentRepository.findAllById(schedule.getId());
+        List<Comment> commentList = commentRepository.findAllBySchedule(schedule);
 
         List<GetCommentResponse> dtos = new ArrayList<>();
         for (Comment comment : commentList) {

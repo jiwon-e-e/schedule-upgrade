@@ -2,6 +2,7 @@ package com.example.schedule_upgrade.comment.service;
 
 import com.example.schedule_upgrade.comment.dto.CreateCommentRequest;
 import com.example.schedule_upgrade.comment.dto.CreateCommentResponse;
+import com.example.schedule_upgrade.comment.dto.GetCommentResponse;
 import com.example.schedule_upgrade.comment.entity.Comment;
 import com.example.schedule_upgrade.comment.repository.CommentRepository;
 import com.example.schedule_upgrade.exception.NonExistentException;
@@ -13,6 +14,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -45,5 +49,26 @@ public class CommentService {
                 savedComment.getContent(),
                 savedComment.getCreatedAt()
         );
+    }
+
+    @Transactional
+    public List<GetCommentResponse> getAll(Long scheduleId) {
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
+                ()->new NonExistentException("존재하지 않는 일정입니다.")
+        );
+
+        List<Comment> commentList = commentRepository.findAllBySchedule(schedule);
+
+        List<GetCommentResponse> dtos = new ArrayList<>();
+        for (Comment comment : commentList) {
+            GetCommentResponse dto = new GetCommentResponse(
+                    comment.getId(),
+                    comment.getUser().getName(),
+                    comment.getContent()
+            );
+            dtos.add(dto);
+        }
+
+        return dtos;
     }
 }
