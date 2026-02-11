@@ -3,6 +3,7 @@ package com.example.schedule_upgrade.user.dto;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
 @Getter
@@ -16,5 +17,6 @@ public class SignupRequest {
     private String email;
 
     @NotBlank
+    @Size(min=6, max=20)
     private String pw;
 }

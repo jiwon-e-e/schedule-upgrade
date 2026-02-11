@@ -1,5 +1,6 @@
 package com.example.schedule_upgrade.user.service;
 
+import com.example.schedule_upgrade.config.PasswordEncoder;
 import com.example.schedule_upgrade.exception.DuplicateEmailException;
 import com.example.schedule_upgrade.exception.NonExistentException;
 import com.example.schedule_upgrade.exception.UnauthorizedUserException;
@@ -19,6 +20,7 @@ import java.util.List;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public SignupResponse signup(SignupRequest request) {
@@ -26,7 +28,14 @@ public class UserService {
             throw new DuplicateEmailException();
         }
 
-        User user = new User(request.getName(), request.getEmail(), request.getPw());
+
+        //암호화 하고 db에 저장
+        String encodePw = passwordEncoder.encode(request.getPw());
+
+        System.out.println("사용자 입력 pw: "+request.getPw());
+        System.out.println("암호화 이후 pw: "+encodePw);
+
+        User user = new User(request.getName(), request.getEmail(), encodePw);
         User savedUser = userRepository.save(user);
 
         return new SignupResponse(savedUser.getName(), savedUser.getEmail());
@@ -38,7 +47,11 @@ public class UserService {
                 () -> new UnauthorizedUserException()
         );
 
-        if (!user.getPw().equals(request.getPw())){
+        // 로그인 할 때 비교 다시하기
+//        if (!user.getPw().equals(request.getPw())){
+//            throw new WrongPwException();
+//        }
+        if(!passwordEncoder.matches(request.getPw(), user.getPw())){
             throw new WrongPwException();
         }
 
