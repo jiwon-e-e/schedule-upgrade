@@ -44,6 +44,22 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @PutMapping("/users/{userId}")
+    public ResponseEntity<UpdateUserResponse> update(
+            @Valid @PathVariable Long userId,
+            @RequestBody UpdateUserRequest request,
+            HttpSession session
+    ){
+        SessionUser sessionUser = (SessionUser) session.getAttribute("loginUser");
+        if( sessionUser == null){
+            throw new BeforeLoginUserException();
+        }
+
+        UpdateUserResponse response = userService.update(userId, sessionUser.getId(), request);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
     @DeleteMapping("/logout")
     public ResponseEntity<String> logout(HttpSession session){
         SessionUser sessionUser = (SessionUser) session.getAttribute("loginUser");
@@ -53,6 +69,19 @@ public class UserController {
 
         session.invalidate();
         return ResponseEntity.status(HttpStatus.OK).body("로그아웃 되었습니다.");
+    }
+
+    @DeleteMapping("/users/{userId}")
+    public ResponseEntity<Void> delete(
+            @PathVariable Long userId, HttpSession session
+    ){
+        SessionUser sessionUser = (SessionUser) session.getAttribute("loginUser");
+        if( sessionUser == null){
+            throw new BeforeLoginUserException();
+        }
+
+        userService.delete(userId, sessionUser.getId());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }

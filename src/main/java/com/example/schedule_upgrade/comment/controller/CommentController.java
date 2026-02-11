@@ -40,4 +40,15 @@ public class CommentController {
         List<GetCommentResponse> response = commentService.getAll(scheduleId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    @DeleteMapping("/schedules/{scheduleId}/comments/{commentId}")
+    ResponseEntity<Void> delete(@PathVariable Long scheduleId, @PathVariable Long commentId, HttpSession session){
+        SessionUser sessionUser = (SessionUser) session.getAttribute("loginUser");
+        if( sessionUser == null){
+            throw new BeforeLoginUserException();
+        }
+
+        commentService.delete(scheduleId, commentId, sessionUser.getId());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }

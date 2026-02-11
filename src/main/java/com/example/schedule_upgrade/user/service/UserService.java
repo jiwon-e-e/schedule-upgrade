@@ -1,6 +1,7 @@
 package com.example.schedule_upgrade.user.service;
 
 import com.example.schedule_upgrade.exception.DuplicateEmailException;
+import com.example.schedule_upgrade.exception.NonExistentException;
 import com.example.schedule_upgrade.exception.UnauthorizedUserException;
 import com.example.schedule_upgrade.exception.WrongPwException;
 import com.example.schedule_upgrade.user.dto.*;
@@ -60,5 +61,33 @@ public class UserService {
             dtos.add(dto);
         }
         return dtos;
+    }
+
+    @Transactional
+    public UpdateUserResponse update(Long userId, Long sessionUserId, @Valid UpdateUserRequest request) {
+        User user = userRepository.findById(userId).orElseThrow(
+                ()-> new NonExistentException("존재하지 않는 사용자입니다.")
+        );
+
+        if(!sessionUserId.equals(userId)){
+            throw new UnauthorizedUserException();
+        }
+
+        user.update(request.getName());
+
+        return new UpdateUserResponse(user.getName());
+    }
+
+    @Transactional
+    public void delete(Long userId, Long sessionUserId){
+        User user = userRepository.findById(userId).orElseThrow(
+                ()-> new NonExistentException("존재하지 않는 사용자입니다.")
+        );
+
+        if(!sessionUserId.equals(userId)){
+            throw new UnauthorizedUserException();
+        }
+
+        userRepository.delete(user);
     }
 }

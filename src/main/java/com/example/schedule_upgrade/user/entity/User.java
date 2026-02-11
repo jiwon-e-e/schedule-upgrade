@@ -32,4 +32,8 @@ public class User extends BaseEntity {
         this.email = email;
         this.pw = pw;
     }
+
+    public void update(@Size(max=10) String name) {
+        this.name = name;
+    }
 }

@@ -6,6 +6,7 @@ import com.example.schedule_upgrade.comment.dto.GetCommentResponse;
 import com.example.schedule_upgrade.comment.entity.Comment;
 import com.example.schedule_upgrade.comment.repository.CommentRepository;
 import com.example.schedule_upgrade.exception.NonExistentException;
+import com.example.schedule_upgrade.exception.UnauthorizedUserException;
 import com.example.schedule_upgrade.schedule.entity.Schedule;
 import com.example.schedule_upgrade.schedule.repository.ScheduleRepository;
 import com.example.schedule_upgrade.user.entity.User;
@@ -70,5 +71,22 @@ public class CommentService {
         }
 
         return dtos;
+    }
+
+    @Transactional
+    public void delete(Long scheduleId, Long commentId, Long sessionUserId) {
+        // 만약 일정 삭제시 댓글도 다 삭제되면 이 부분 없어도 됨
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
+                ()->new NonExistentException("존재하지 않는 일정입니다.")
+        );
+
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+                ()-> new NonExistentException("존재하지 않는 댓글입니다.")
+        );
+        if (!sessionUserId.equals(comment.getUser().getId())){
+            throw new UnauthorizedUserException();
+        }
+
+        commentRepository.delete(comment);
     }
 }

@@ -60,7 +60,7 @@ public class ScheduleController {
     }
 
 
-    @DeleteMapping("/scedules/{scheduleId}")
+    @DeleteMapping("/schedules/{scheduleId}")
     ResponseEntity<String> delete(
             @Valid @PathVariable Long scheduleId, HttpSession session){
 
