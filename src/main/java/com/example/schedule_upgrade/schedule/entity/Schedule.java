@@ -3,6 +3,7 @@ package com.example.schedule_upgrade.schedule.entity;
 import com.example.schedule_upgrade.BaseEntity;
 import com.example.schedule_upgrade.user.entity.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +17,9 @@ public class Schedule extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Size(max=20)
     private String title;
+    @Size(max=200)
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

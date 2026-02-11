@@ -4,6 +4,7 @@ import com.example.schedule_upgrade.BaseEntity;
 import com.example.schedule_upgrade.schedule.entity.Schedule;
 import com.example.schedule_upgrade.user.entity.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,8 @@ public class Comment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Size(max= 100)
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
