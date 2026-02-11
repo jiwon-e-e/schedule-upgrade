@@ -1,5 +1,6 @@
 package com.example.schedule_upgrade.user.service;
 
+import com.example.schedule_upgrade.exception.DuplicateEmailException;
 import com.example.schedule_upgrade.exception.UnauthorizedUserException;
 import com.example.schedule_upgrade.exception.WrongPwException;
 import com.example.schedule_upgrade.user.dto.*;
@@ -20,6 +21,10 @@ public class UserService {
 
     @Transactional
     public SignupResponse signup(SignupRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())){
+            throw new DuplicateEmailException();
+        }
+
         User user = new User(request.getName(), request.getEmail(), request.getPw());
         User savedUser = userRepository.save(user);
 
