@@ -39,8 +39,11 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<List<GetUserResponse>> getAll(){
-        List<GetUserResponse> response = userService.findAll();
+    public ResponseEntity<List<GetUserResponse>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ){
+        List<GetUserResponse> response = userService.findAll(page, size);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

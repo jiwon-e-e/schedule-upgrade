@@ -13,6 +13,10 @@ import com.example.schedule_upgrade.user.entity.User;
 import com.example.schedule_upgrade.user.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableArgumentResolver;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +30,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final ScheduleRepository scheduleRepository;
+    private final PageableArgumentResolver pageableArgumentResolver;
 
     @Transactional
     public CreateCommentResponse createComment(@Valid Long scheduleId, CreateCommentRequest request, Long sessionUserId) {
@@ -53,12 +58,14 @@ public class CommentService {
     }
 
     @Transactional
-    public List<GetCommentResponse> getAll(Long scheduleId) {
+    public List<GetCommentResponse> getAll(Long scheduleId, int page, int size) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 ()->new NonExistentException("존재하지 않는 일정입니다.")
         );
 
-        List<Comment> commentList = commentRepository.findAllBySchedule(schedule);
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Comment> commentList = commentRepository.findAllBySchedule_Id(schedule.getId(), pageable);
 
         List<GetCommentResponse> dtos = new ArrayList<>();
         for (Comment comment : commentList) {

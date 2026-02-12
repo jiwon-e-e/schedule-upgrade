@@ -23,7 +23,9 @@ public class CommentController {
 
     @PostMapping("/schedules/{scheduleId}/comments")
     ResponseEntity<CreateCommentResponse> create(
-            @Valid @PathVariable Long scheduleId, @RequestBody CreateCommentRequest request, HttpSession session){
+            @Valid @PathVariable Long scheduleId,
+            @RequestBody CreateCommentRequest request,
+            HttpSession session){
         SessionUser sessionUser = (SessionUser) session.getAttribute("loginUser");
         if( sessionUser == null){
             throw new BeforeLoginUserException();
@@ -35,9 +37,11 @@ public class CommentController {
 
     @GetMapping("/schedules/{scheduleId}/comments")
     ResponseEntity<List<GetCommentResponse>> getAll(
-            @PathVariable Long scheduleId
+            @PathVariable Long scheduleId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
     ){
-        List<GetCommentResponse> response = commentService.getAll(scheduleId);
+        List<GetCommentResponse> response = commentService.getAll(scheduleId, page, size);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
