@@ -33,8 +33,8 @@ public class UserService {
         //암호화 하고 db에 저장
         String encodePw = passwordEncoder.encode(request.getPw());
 
-        System.out.println("사용자 입력 pw: "+request.getPw());
-        System.out.println("암호화 이후 pw: "+encodePw);
+//        System.out.println("사용자 입력 pw: "+request.getPw());
+//        System.out.println("암호화 이후 pw: "+encodePw);
 
         User user = new User(request.getName(), request.getEmail(), encodePw);
         User savedUser = userRepository.save(user);
