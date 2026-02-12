@@ -29,7 +29,6 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
-    private final ResourcePatternResolver resourcePatternResolver;
 
     @Transactional
     public CreateScheduleResponse createSchedule(@Valid CreateScheduleRequest request, Long sessionUserId) {
@@ -61,9 +60,11 @@ public class ScheduleService {
         List<GetSchedulesResponse> dtos = new ArrayList<>();
 
         for (Schedule schedule : schedules) {
+            int commentCount = commentRepository.countBySchedule_Id(schedule.getId());
             GetSchedulesResponse dto = new GetSchedulesResponse(
                     schedule.getId(),
-                    schedule.getTitle()
+                    schedule.getTitle(),
+                    commentCount
             );
             dtos.add(dto);
         }
