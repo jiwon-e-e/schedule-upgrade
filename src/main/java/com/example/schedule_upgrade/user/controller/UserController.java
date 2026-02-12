@@ -40,8 +40,8 @@ public class UserController {
 
     @GetMapping("/users")
     public ResponseEntity<List<GetUserResponse>> getAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
+            @Valid @RequestParam(defaultValue = "0") int page,
+            @Valid @RequestParam(defaultValue = "5") int size
     ){
         List<GetUserResponse> response = userService.findAll(page, size);
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -49,8 +49,8 @@ public class UserController {
 
     @PutMapping("/users/{userId}")
     public ResponseEntity<UpdateUserResponse> update(
-            @Valid @PathVariable Long userId,
-            @RequestBody UpdateUserRequest request,
+            @PathVariable Long userId,
+            @Valid @RequestBody UpdateUserRequest request,
             HttpSession session
     ){
         SessionUser sessionUser = (SessionUser) session.getAttribute("loginUser");

@@ -35,8 +35,8 @@ public class ScheduleController {
 
     @GetMapping("/schedules")
     ResponseEntity<List<GetSchedulesResponse>> getAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
+            @Valid @RequestParam(defaultValue = "0") int page,
+            @Valid @RequestParam(defaultValue = "5") int size
     ){
         List<GetSchedulesResponse> response = scheduleService.findAll(page, size);
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -45,15 +45,15 @@ public class ScheduleController {
     @GetMapping("/schedules/{scheduleId}")
     ResponseEntity<GetOneScheduleResponse> getOne(
             @Valid @PathVariable Long scheduleId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size){
+            @Valid @RequestParam(defaultValue = "0") int page,
+            @Valid @RequestParam(defaultValue = "5") int size){
         GetOneScheduleResponse response = scheduleService.findOne(scheduleId, page, size);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PutMapping("/schedules/{scheduleId}")
     ResponseEntity<UpdateScheduleResponse> update(
-            @Valid @PathVariable Long scheduleId, @RequestBody UpdateScheduleRequest request,
+            @PathVariable Long scheduleId, @Valid @RequestBody UpdateScheduleRequest request,
             HttpSession session){
 
         SessionUser sessionUser = (SessionUser) session.getAttribute("loginUser");

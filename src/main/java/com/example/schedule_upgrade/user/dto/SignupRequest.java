@@ -14,7 +14,7 @@ public class SignupRequest {
     private String name;
 
     @NotBlank
-    @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
+    @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "이메일 형식과 일치해야합니다.")
     private String email;
 
     @NotBlank
