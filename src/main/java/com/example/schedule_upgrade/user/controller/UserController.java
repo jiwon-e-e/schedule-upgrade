@@ -1,13 +1,13 @@
 package com.example.schedule_upgrade.user.controller;
 
-import com.example.schedule_upgrade.exception.BeforeLoginUserException;
+import com.example.schedule_upgrade.exception2.ErrorCode;
+import com.example.schedule_upgrade.exception2.ServiceException;
 import com.example.schedule_upgrade.user.dto.*;
 import com.example.schedule_upgrade.user.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -55,7 +55,7 @@ public class UserController {
     ){
         SessionUser sessionUser = (SessionUser) session.getAttribute("loginUser");
         if( sessionUser == null){
-            throw new BeforeLoginUserException();
+            throw new ServiceException(ErrorCode.BEFORE_LOGIN);
         }
 
         UpdateUserResponse response = userService.update(userId, sessionUser.getId(), request);
@@ -67,7 +67,7 @@ public class UserController {
     public ResponseEntity<String> logout(HttpSession session){
         SessionUser sessionUser = (SessionUser) session.getAttribute("loginUser");
         if( sessionUser == null){
-            throw new BeforeLoginUserException();
+            throw new ServiceException(ErrorCode.BEFORE_LOGIN);
         }
 
         session.invalidate();
@@ -80,7 +80,7 @@ public class UserController {
     ){
         SessionUser sessionUser = (SessionUser) session.getAttribute("loginUser");
         if( sessionUser == null){
-            throw new BeforeLoginUserException();
+            throw new ServiceException(ErrorCode.BEFORE_LOGIN);
         }
 
         userService.delete(userId, sessionUser.getId());

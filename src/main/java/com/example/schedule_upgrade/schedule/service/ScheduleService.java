@@ -3,8 +3,8 @@ package com.example.schedule_upgrade.schedule.service;
 import com.example.schedule_upgrade.comment.dto.GetCommentResponse;
 import com.example.schedule_upgrade.comment.entity.Comment;
 import com.example.schedule_upgrade.comment.repository.CommentRepository;
-import com.example.schedule_upgrade.exception.NonExistentException;
-import com.example.schedule_upgrade.exception.UnauthorizedUserException;
+import com.example.schedule_upgrade.exception2.ErrorCode;
+import com.example.schedule_upgrade.exception2.ServiceException;
 import com.example.schedule_upgrade.schedule.dto.*;
 import com.example.schedule_upgrade.schedule.entity.Schedule;
 import com.example.schedule_upgrade.schedule.repository.ScheduleRepository;
@@ -12,7 +12,6 @@ import com.example.schedule_upgrade.user.entity.User;
 import com.example.schedule_upgrade.user.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,7 +32,7 @@ public class ScheduleService {
     @Transactional
     public CreateScheduleResponse createSchedule(@Valid CreateScheduleRequest request, Long sessionUserId) {
         User user = userRepository.findById(sessionUserId).orElseThrow(
-                ()->new NonExistentException("존재하지 않는 사용자입니다.")
+                ()->new ServiceException(ErrorCode.BEFORE_LOGIN)
         );
 
         Schedule schedule = new Schedule(
@@ -74,7 +73,7 @@ public class ScheduleService {
     @Transactional(readOnly = true)
     public GetOneScheduleResponse findOne(@Valid Long scheduleId, int page, int size) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                ()-> new NonExistentException("존재하지 않는 일정입니다.")
+                ()-> new ServiceException(ErrorCode.SCHEDULE_NOT_FOUND)
         );
 
         Pageable pageable = PageRequest.of(page, size);
@@ -106,11 +105,11 @@ public class ScheduleService {
     @Transactional
     public UpdateScheduleResponse update(@Valid Long scheduleId, UpdateScheduleRequest request, Long sessionUserId) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                ()-> new NonExistentException("존재하지 않는 일정입니다.")
+                ()-> new ServiceException(ErrorCode.SCHEDULE_NOT_FOUND)
         );
 
         if (!sessionUserId.equals(schedule.getUser().getId())){
-            throw new UnauthorizedUserException();
+            throw new ServiceException(ErrorCode.WRITER_MISMATCH);
         }
 
         schedule.update(request.getTitle(), request.getContent());
@@ -127,11 +126,11 @@ public class ScheduleService {
     @Transactional
     public void delete(@Valid Long scheduleId, Long sessionUserId) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                ()-> new NonExistentException("존재하지 않는 일정입니다.")
+                ()-> new ServiceException(ErrorCode.SCHEDULE_NOT_FOUND)
         );
 
         if (!sessionUserId.equals(schedule.getUser().getId())){
-            throw new UnauthorizedUserException();
+            throw new ServiceException(ErrorCode.WRITER_MISMATCH);
         }
 
         scheduleRepository.delete(schedule);

@@ -1,6 +1,7 @@
 package com.example.schedule_upgrade.schedule.controller;
 
-import com.example.schedule_upgrade.exception.BeforeLoginUserException;
+import com.example.schedule_upgrade.exception2.ErrorCode;
+import com.example.schedule_upgrade.exception2.ServiceException;
 import com.example.schedule_upgrade.schedule.dto.*;
 import com.example.schedule_upgrade.schedule.service.ScheduleService;
 import com.example.schedule_upgrade.user.dto.SessionUser;
@@ -25,7 +26,7 @@ public class ScheduleController {
 
         SessionUser sessionUser = (SessionUser) session.getAttribute("loginUser");
         if( sessionUser == null){
-            throw new BeforeLoginUserException();
+            throw new ServiceException(ErrorCode.BEFORE_LOGIN);
         }
 
         CreateScheduleResponse response = scheduleService.createSchedule(request,sessionUser.getId());
@@ -57,7 +58,7 @@ public class ScheduleController {
 
         SessionUser sessionUser = (SessionUser) session.getAttribute("loginUser");
         if( sessionUser == null){
-            throw new BeforeLoginUserException();
+            throw new ServiceException(ErrorCode.BEFORE_LOGIN);
         }
 
         UpdateScheduleResponse response = scheduleService.update(scheduleId, request, sessionUser.getId());
@@ -71,7 +72,7 @@ public class ScheduleController {
 
         SessionUser sessionUser = (SessionUser) session.getAttribute("loginUser");
         if( sessionUser == null){
-            throw new BeforeLoginUserException();
+            throw new ServiceException(ErrorCode.BEFORE_LOGIN);
         }
 
         scheduleService.delete(scheduleId,sessionUser.getId());

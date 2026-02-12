@@ -4,12 +4,12 @@ import com.example.schedule_upgrade.comment.dto.CreateCommentRequest;
 import com.example.schedule_upgrade.comment.dto.CreateCommentResponse;
 import com.example.schedule_upgrade.comment.dto.GetCommentResponse;
 import com.example.schedule_upgrade.comment.service.CommentService;
-import com.example.schedule_upgrade.exception.BeforeLoginUserException;
+import com.example.schedule_upgrade.exception2.ErrorCode;
+import com.example.schedule_upgrade.exception2.ServiceException;
 import com.example.schedule_upgrade.user.dto.SessionUser;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +28,7 @@ public class CommentController {
             HttpSession session){
         SessionUser sessionUser = (SessionUser) session.getAttribute("loginUser");
         if( sessionUser == null){
-            throw new BeforeLoginUserException();
+            throw new ServiceException(ErrorCode.BEFORE_LOGIN);
         }
 
         CreateCommentResponse response = commentService.createComment(scheduleId, request, sessionUser.getId());
@@ -49,7 +49,7 @@ public class CommentController {
     ResponseEntity<Void> delete(@PathVariable Long scheduleId, @PathVariable Long commentId, HttpSession session){
         SessionUser sessionUser = (SessionUser) session.getAttribute("loginUser");
         if( sessionUser == null){
-            throw new BeforeLoginUserException();
+            throw new ServiceException(ErrorCode.BEFORE_LOGIN);
         }
 
         commentService.delete(scheduleId, commentId, sessionUser.getId());

@@ -1,10 +1,8 @@
 package com.example.schedule_upgrade.user.service;
 
 import com.example.schedule_upgrade.config.PasswordEncoder;
-import com.example.schedule_upgrade.exception.DuplicateEmailException;
-import com.example.schedule_upgrade.exception.NonExistentException;
-import com.example.schedule_upgrade.exception.UnauthorizedUserException;
-import com.example.schedule_upgrade.exception.WrongPwException;
+import com.example.schedule_upgrade.exception2.ErrorCode;
+import com.example.schedule_upgrade.exception2.ServiceException;
 import com.example.schedule_upgrade.user.dto.*;
 import com.example.schedule_upgrade.user.entity.User;
 import com.example.schedule_upgrade.user.repository.UserRepository;
@@ -28,7 +26,7 @@ public class UserService {
     @Transactional
     public SignupResponse signup(SignupRequest request) {
         if (userRepository.existsByEmail(request.getEmail())){
-            throw new DuplicateEmailException();
+            throw new ServiceException(ErrorCode.DUPLICATE_EMAIL);
         }
 
 
@@ -47,7 +45,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public SessionUser login(@Valid LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow(
-                () -> new UnauthorizedUserException()
+                () -> new ServiceException(ErrorCode.USER_NOT_FOUND)
         );
 
         // 로그인 할 때 비교 다시하기
@@ -55,7 +53,7 @@ public class UserService {
 //            throw new WrongPwException();
 //        }
         if(!passwordEncoder.matches(request.getPw(), user.getPw())){
-            throw new WrongPwException();
+            throw new ServiceException(ErrorCode.WRONG_PW);
         }
 
         return new SessionUser(
@@ -83,11 +81,11 @@ public class UserService {
     @Transactional
     public UpdateUserResponse update(Long userId, Long sessionUserId, @Valid UpdateUserRequest request) {
         User user = userRepository.findById(userId).orElseThrow(
-                ()-> new NonExistentException("존재하지 않는 사용자입니다.")
+                ()-> new ServiceException(ErrorCode.USER_NOT_FOUND)
         );
 
         if(!sessionUserId.equals(userId)){
-            throw new UnauthorizedUserException();
+            throw new ServiceException(ErrorCode.USER_MISMATCH);
         }
 
         user.update(request.getName());
@@ -98,11 +96,11 @@ public class UserService {
     @Transactional
     public void delete(Long userId, Long sessionUserId){
         User user = userRepository.findById(userId).orElseThrow(
-                ()-> new NonExistentException("존재하지 않는 사용자입니다.")
+                ()-> new ServiceException(ErrorCode.USER_NOT_FOUND)
         );
 
         if(!sessionUserId.equals(userId)){
-            throw new UnauthorizedUserException();
+            throw new ServiceException(ErrorCode.USER_MISMATCH);
         }
 
         userRepository.delete(user);
