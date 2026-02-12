@@ -33,15 +33,20 @@ public class ScheduleController {
     }
 
     @GetMapping("/schedules")
-    ResponseEntity<List<GetSchedulesResponse>> getAll(){
-        List<GetSchedulesResponse> response = scheduleService.findAll();
+    ResponseEntity<List<GetSchedulesResponse>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ){
+        List<GetSchedulesResponse> response = scheduleService.findAll(page, size);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/schedules/{scheduleId}")
     ResponseEntity<GetOneScheduleResponse> getOne(
-            @Valid @PathVariable Long scheduleId){
-        GetOneScheduleResponse response = scheduleService.findOne(scheduleId);
+            @Valid @PathVariable Long scheduleId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size){
+        GetOneScheduleResponse response = scheduleService.findOne(scheduleId, page, size);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

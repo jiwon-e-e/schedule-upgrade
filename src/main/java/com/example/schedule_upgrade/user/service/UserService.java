@@ -10,6 +10,9 @@ import com.example.schedule_upgrade.user.entity.User;
 import com.example.schedule_upgrade.user.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,8 +64,9 @@ public class UserService {
     }
 
     @Transactional
-    public List<GetUserResponse> findAll() {
-        List<User> users = userRepository.findAll();
+    public List<GetUserResponse> findAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> users = userRepository.findAll(pageable);
         List<GetUserResponse> dtos = new ArrayList<>();
 
         for (User user : users) {

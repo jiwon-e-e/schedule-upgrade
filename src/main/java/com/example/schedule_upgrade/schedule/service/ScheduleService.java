@@ -13,6 +13,9 @@ import com.example.schedule_upgrade.user.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,8 +55,9 @@ public class ScheduleService {
     }
 
     @Transactional(readOnly = true)
-    public List<GetSchedulesResponse> findAll() {
-        List<Schedule> schedules = scheduleRepository.findAll();
+    public List<GetSchedulesResponse> findAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page,size);
+        Page<Schedule> schedules = scheduleRepository.findAll(pageable);
         List<GetSchedulesResponse> dtos = new ArrayList<>();
 
         for (Schedule schedule : schedules) {
@@ -67,12 +71,14 @@ public class ScheduleService {
     }
 
     @Transactional(readOnly = true)
-    public GetOneScheduleResponse findOne(@Valid Long scheduleId) {
+    public GetOneScheduleResponse findOne(@Valid Long scheduleId, int page, int size) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 ()-> new NonExistentException("존재하지 않는 일정입니다.")
         );
 
-        List<Comment> commentList = commentRepository.findAllBySchedule(schedule);
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Comment> commentList = commentRepository.findAllBySchedule_Id(schedule.getId(),pageable);
 
         List<GetCommentResponse> dtos = new ArrayList<>();
         for (Comment comment : commentList) {
