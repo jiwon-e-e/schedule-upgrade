@@ -1,13 +1,13 @@
 package com.example.schedule_upgrade.user.controller;
 
-import com.example.schedule_upgrade.exception.BeforeLoginUserException;
+import com.example.schedule_upgrade.exception2.ErrorCode;
+import com.example.schedule_upgrade.exception2.ServiceException;
 import com.example.schedule_upgrade.user.dto.*;
 import com.example.schedule_upgrade.user.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,8 +40,8 @@ public class UserController {
 
     @GetMapping("/users")
     public ResponseEntity<List<GetUserResponse>> getAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
+            @Valid @RequestParam(defaultValue = "0") int page,
+            @Valid @RequestParam(defaultValue = "5") int size
     ){
         List<GetUserResponse> response = userService.findAll(page, size);
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -49,13 +49,13 @@ public class UserController {
 
     @PutMapping("/users/{userId}")
     public ResponseEntity<UpdateUserResponse> update(
-            @Valid @PathVariable Long userId,
-            @RequestBody UpdateUserRequest request,
+            @PathVariable Long userId,
+            @Valid @RequestBody UpdateUserRequest request,
             HttpSession session
     ){
         SessionUser sessionUser = (SessionUser) session.getAttribute("loginUser");
         if( sessionUser == null){
-            throw new BeforeLoginUserException();
+            throw new ServiceException(ErrorCode.BEFORE_LOGIN);
         }
 
         UpdateUserResponse response = userService.update(userId, sessionUser.getId(), request);
@@ -67,7 +67,7 @@ public class UserController {
     public ResponseEntity<String> logout(HttpSession session){
         SessionUser sessionUser = (SessionUser) session.getAttribute("loginUser");
         if( sessionUser == null){
-            throw new BeforeLoginUserException();
+            throw new ServiceException(ErrorCode.BEFORE_LOGIN);
         }
 
         session.invalidate();
@@ -80,7 +80,7 @@ public class UserController {
     ){
         SessionUser sessionUser = (SessionUser) session.getAttribute("loginUser");
         if( sessionUser == null){
-            throw new BeforeLoginUserException();
+            throw new ServiceException(ErrorCode.BEFORE_LOGIN);
         }
 
         userService.delete(userId, sessionUser.getId());
