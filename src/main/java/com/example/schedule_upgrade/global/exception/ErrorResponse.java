@@ -1,4 +1,4 @@
-package com.example.schedule_upgrade.exception2;
+package com.example.schedule_upgrade.global.exception;
 
 import lombok.Builder;
 import lombok.Getter;

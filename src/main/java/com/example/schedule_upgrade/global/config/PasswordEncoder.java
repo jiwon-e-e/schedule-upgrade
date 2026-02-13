@@ -1,4 +1,4 @@
-package com.example.schedule_upgrade.config;
+package com.example.schedule_upgrade.global.config;
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 

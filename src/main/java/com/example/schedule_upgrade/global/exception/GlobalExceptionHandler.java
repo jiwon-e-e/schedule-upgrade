@@ -1,4 +1,4 @@
-package com.example.schedule_upgrade.exception2;
+package com.example.schedule_upgrade.global.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;

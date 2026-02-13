@@ -1,7 +1,7 @@
 package com.example.schedule_upgrade.user.controller;
 
-import com.example.schedule_upgrade.exception2.ErrorCode;
-import com.example.schedule_upgrade.exception2.ServiceException;
+import com.example.schedule_upgrade.global.exception.ErrorCode;
+import com.example.schedule_upgrade.global.exception.ServiceException;
 import com.example.schedule_upgrade.user.dto.*;
 import com.example.schedule_upgrade.user.service.UserService;
 import jakarta.servlet.http.HttpSession;

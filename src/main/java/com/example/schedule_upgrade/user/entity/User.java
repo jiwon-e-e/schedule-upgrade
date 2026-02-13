@@ -1,8 +1,7 @@
 package com.example.schedule_upgrade.user.entity;
 
-import com.example.schedule_upgrade.BaseEntity;
+import com.example.schedule_upgrade.global.common.BaseEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -32,7 +31,7 @@ public class User extends BaseEntity {
         this.pw = pw;
     }
 
-    public void update(@Size(max=10) String name) {
+    public void update(String name) {
         this.name = name;
     }
 }

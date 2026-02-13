@@ -1,8 +1,8 @@
 package com.example.schedule_upgrade.user.service;
 
-import com.example.schedule_upgrade.config.PasswordEncoder;
-import com.example.schedule_upgrade.exception2.ErrorCode;
-import com.example.schedule_upgrade.exception2.ServiceException;
+import com.example.schedule_upgrade.global.config.PasswordEncoder;
+import com.example.schedule_upgrade.global.exception.ErrorCode;
+import com.example.schedule_upgrade.global.exception.ServiceException;
 import com.example.schedule_upgrade.user.dto.*;
 import com.example.schedule_upgrade.user.entity.User;
 import com.example.schedule_upgrade.user.repository.UserRepository;
@@ -43,7 +43,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public SessionUser login(@Valid LoginRequest request) {
+    public SessionUser login(LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow(
                 () -> new ServiceException(ErrorCode.USER_NOT_FOUND)
         );
@@ -79,7 +79,7 @@ public class UserService {
     }
 
     @Transactional
-    public UpdateUserResponse update(Long userId, Long sessionUserId, @Valid UpdateUserRequest request) {
+    public UpdateUserResponse update(Long userId, Long sessionUserId, UpdateUserRequest request) {
         User user = userRepository.findById(userId).orElseThrow(
                 ()-> new ServiceException(ErrorCode.USER_NOT_FOUND)
         );

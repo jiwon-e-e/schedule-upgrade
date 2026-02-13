@@ -1,9 +1,8 @@
 package com.example.schedule_upgrade.schedule.entity;
 
-import com.example.schedule_upgrade.BaseEntity;
+import com.example.schedule_upgrade.global.common.BaseEntity;
 import com.example.schedule_upgrade.user.entity.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,4 +1,4 @@
-package com.example.schedule_upgrade;
+package com.example.schedule_upgrade.global.common;
 
 import jakarta.persistence.*;
 import lombok.Getter;

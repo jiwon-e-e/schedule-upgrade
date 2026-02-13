@@ -5,11 +5,10 @@ import com.example.schedule_upgrade.comment.dto.CreateCommentResponse;
 import com.example.schedule_upgrade.comment.dto.GetCommentResponse;
 import com.example.schedule_upgrade.comment.entity.Comment;
 import com.example.schedule_upgrade.comment.repository.CommentRepository;
-import com.example.schedule_upgrade.exception2.ErrorCode;
-import com.example.schedule_upgrade.exception2.ServiceException;
+import com.example.schedule_upgrade.global.exception.ErrorCode;
+import com.example.schedule_upgrade.global.exception.ServiceException;
 import com.example.schedule_upgrade.schedule.entity.Schedule;
 import com.example.schedule_upgrade.schedule.repository.ScheduleRepository;
-import com.example.schedule_upgrade.schedule.service.ScheduleService;
 import com.example.schedule_upgrade.user.entity.User;
 import com.example.schedule_upgrade.user.repository.UserRepository;
 import jakarta.validation.Valid;
@@ -32,7 +31,7 @@ public class CommentService {
     private final ScheduleRepository scheduleRepository;
 
     @Transactional
-    public CreateCommentResponse createComment(@Valid Long scheduleId, CreateCommentRequest request, Long sessionUserId) {
+    public CreateCommentResponse createComment(Long scheduleId, CreateCommentRequest request, Long sessionUserId) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 ()->new ServiceException(ErrorCode.SCHEDULE_NOT_FOUND)
         );

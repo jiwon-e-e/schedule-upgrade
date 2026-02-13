@@ -3,8 +3,8 @@ package com.example.schedule_upgrade.schedule.service;
 import com.example.schedule_upgrade.comment.dto.GetCommentResponse;
 import com.example.schedule_upgrade.comment.entity.Comment;
 import com.example.schedule_upgrade.comment.repository.CommentRepository;
-import com.example.schedule_upgrade.exception2.ErrorCode;
-import com.example.schedule_upgrade.exception2.ServiceException;
+import com.example.schedule_upgrade.global.exception.ErrorCode;
+import com.example.schedule_upgrade.global.exception.ServiceException;
 import com.example.schedule_upgrade.schedule.dto.*;
 import com.example.schedule_upgrade.schedule.entity.Schedule;
 import com.example.schedule_upgrade.schedule.repository.ScheduleRepository;
@@ -30,7 +30,7 @@ public class ScheduleService {
     private final CommentRepository commentRepository;
 
     @Transactional
-    public CreateScheduleResponse createSchedule(@Valid CreateScheduleRequest request, Long sessionUserId) {
+    public CreateScheduleResponse createSchedule(CreateScheduleRequest request, Long sessionUserId) {
         User user = userRepository.findById(sessionUserId).orElseThrow(
                 ()->new ServiceException(ErrorCode.BEFORE_LOGIN)
         );
@@ -71,7 +71,7 @@ public class ScheduleService {
     }
 
     @Transactional(readOnly = true)
-    public GetOneScheduleResponse findOne(@Valid Long scheduleId, int page, int size) {
+    public GetOneScheduleResponse findOne(Long scheduleId, int page, int size) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 ()-> new ServiceException(ErrorCode.SCHEDULE_NOT_FOUND)
         );
@@ -103,7 +103,7 @@ public class ScheduleService {
     }
 
     @Transactional
-    public UpdateScheduleResponse update(@Valid Long scheduleId, UpdateScheduleRequest request, Long sessionUserId) {
+    public UpdateScheduleResponse update( Long scheduleId, UpdateScheduleRequest request, Long sessionUserId) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 ()-> new ServiceException(ErrorCode.SCHEDULE_NOT_FOUND)
         );
