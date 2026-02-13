@@ -1,5 +1,7 @@
 # schedule-upgrade
 
+spring 3기 권지원입니다. 숙련 Spring 주차 과제 제출합니다!
+
 ## 1. 프로젝트 소개
 
 schedule_upgrade 프로젝트는 사용자가 회원가입 및 로그인 후 일정을 생성하고 관리할 수 있는 일정 관리 서비스입니다.
