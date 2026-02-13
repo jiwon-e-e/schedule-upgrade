@@ -31,6 +31,7 @@ public class ScheduleService {
 
     @Transactional
     public CreateScheduleResponse createSchedule(CreateScheduleRequest request, Long sessionUserId) {
+        // Session User 에서 받아온 정보를 통해 user 조회
         User user = userRepository.findById(sessionUserId).orElseThrow(
                 ()->new ServiceException(ErrorCode.BEFORE_LOGIN)
         );
@@ -54,11 +55,14 @@ public class ScheduleService {
 
     @Transactional(readOnly = true)
     public List<GetSchedulesResponse> findAll(int page, int size) {
+
+        // Query parameter 로 받은 page 와 size 를 pageable 의 인수로 사용
         Pageable pageable = PageRequest.of(page,size);
         Page<Schedule> schedules = scheduleRepository.findAll(pageable);
         List<GetSchedulesResponse> dtos = new ArrayList<>();
 
         for (Schedule schedule : schedules) {
+            // Schedule 에 달린 Comment 의 개수를 가져옴
             int commentCount = commentRepository.countBySchedule_Id(schedule.getId());
             GetSchedulesResponse dto = new GetSchedulesResponse(
                     schedule.getId(),
@@ -72,14 +76,17 @@ public class ScheduleService {
 
     @Transactional(readOnly = true)
     public GetOneScheduleResponse findOne(Long scheduleId, int page, int size) {
+
+        // PathVariable 로 받은 schedule ID 로 schedule 조회
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 ()-> new ServiceException(ErrorCode.SCHEDULE_NOT_FOUND)
         );
 
+        // Query parameter 로 받은 page 와 size 를 pageable 의 인수로 사용
         Pageable pageable = PageRequest.of(page, size);
-
         Page<Comment> commentList = commentRepository.findAllBySchedule_Id(schedule.getId(),pageable);
 
+        //GetCommentResponse 를 다시 만들어주고
         List<GetCommentResponse> dtos = new ArrayList<>();
         for (Comment comment : commentList) {
             GetCommentResponse dto = new GetCommentResponse(
@@ -90,6 +97,7 @@ public class ScheduleService {
             dtos.add(dto);
         }
 
+        //dtos 를 Schedule Response 의 필드값으로 반환
         return new GetOneScheduleResponse(
                 schedule.getId(),
                 schedule.getUser().getName(),
@@ -104,10 +112,13 @@ public class ScheduleService {
 
     @Transactional
     public UpdateScheduleResponse update( Long scheduleId, UpdateScheduleRequest request, Long sessionUserId) {
+        // PathVariable 로 받은 schedule ID 로 schedule 조회
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 ()-> new ServiceException(ErrorCode.SCHEDULE_NOT_FOUND)
         );
 
+        // 수정하려는 유저가 실제 schedule 의 작성자인지 확인
+        // 아니라면 작성자 mismatch Exception 처리
         if (!sessionUserId.equals(schedule.getUser().getId())){
             throw new ServiceException(ErrorCode.WRITER_MISMATCH);
         }
@@ -125,10 +136,14 @@ public class ScheduleService {
 
     @Transactional
     public void delete(@Valid Long scheduleId, Long sessionUserId) {
+
+        // PathVariable 로 받은 schedule ID 로 schedule 조회
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 ()-> new ServiceException(ErrorCode.SCHEDULE_NOT_FOUND)
         );
 
+        // 삭제하려는 유저가 실제 schedule 의 작성자인지 확인
+        // 아니라면 작성자 mismatch Exception 처리
         if (!sessionUserId.equals(schedule.getUser().getId())){
             throw new ServiceException(ErrorCode.WRITER_MISMATCH);
         }

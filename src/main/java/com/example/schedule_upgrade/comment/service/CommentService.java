@@ -11,7 +11,6 @@ import com.example.schedule_upgrade.schedule.entity.Schedule;
 import com.example.schedule_upgrade.schedule.repository.ScheduleRepository;
 import com.example.schedule_upgrade.user.entity.User;
 import com.example.schedule_upgrade.user.repository.UserRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,10 +31,12 @@ public class CommentService {
 
     @Transactional
     public CreateCommentResponse createComment(Long scheduleId, CreateCommentRequest request, Long sessionUserId) {
+        // PathVariable 로 받은 schedule ID 로 schedule 조회
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 ()->new ServiceException(ErrorCode.SCHEDULE_NOT_FOUND)
         );
 
+        // Session User 에서 받아온 정보를 통해 user 조회
         User user = userRepository.findById(sessionUserId).orElseThrow(
                 ()->new ServiceException(ErrorCode.BEFORE_LOGIN)
         );
@@ -58,10 +59,12 @@ public class CommentService {
 
     @Transactional
     public List<GetCommentResponse> getAll(Long scheduleId, int page, int size) {
+        // PathVariable 로 받은 schedule ID 로 schedule 조회
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 ()->new ServiceException(ErrorCode.SCHEDULE_NOT_FOUND)
         );
 
+        // Query parameter 로 받은 page 와 size 를 pageable 의 인수로 사용
         Pageable pageable = PageRequest.of(page, size);
         Page<Comment> commentList = commentRepository.findAllBySchedule_Id(schedule.getId(), pageable);
 
@@ -85,9 +88,13 @@ public class CommentService {
                 ()->new ServiceException(ErrorCode.SCHEDULE_NOT_FOUND)
         );
 
+        // PathVariable 로 받은 comment ID 로 comment 조회
         Comment comment = commentRepository.findById(commentId).orElseThrow(
                 ()-> new ServiceException(ErrorCode.COMMENT_NOT_FOUND)
         );
+
+        // 삭제하려는 유저가 실제 comment 의 작성자인지 확인
+        // 아니라면 작성자 mismatch Exception 처리
         if (!sessionUserId.equals(comment.getUser().getId())){
             throw new ServiceException(ErrorCode.WRITER_MISMATCH);
         }

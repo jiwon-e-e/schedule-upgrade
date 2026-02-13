@@ -21,6 +21,9 @@ import java.util.List;
 public class CommentController {
     private final CommentService commentService;
 
+    // 대부분 요청에 HttpSession 을 받아와서 sessionUser 를 확인하는 과정이 추가되었습니다.
+    // 로그인이 꼭 필요한 요청은 sessionUser 가 null 이라면 Exception 으로 처리됩니다.
+
     @PostMapping("/schedules/{scheduleId}/comments")
     ResponseEntity<CreateCommentResponse> create(
             @Valid @PathVariable Long scheduleId,
@@ -34,6 +37,10 @@ public class CommentController {
         CreateCommentResponse response = commentService.createComment(scheduleId, request, sessionUser.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+    // GET 요청에 page의 크기와 번호를 지정할 수 있습니다.
+    // size-> 한 페이지당 몇 개의 정보가 조회되는지 지정
+    // page-> 몇 번째 페이지를 조회할건지 지정
 
     @GetMapping("/schedules/{scheduleId}/comments")
     ResponseEntity<List<GetCommentResponse>> getAll(

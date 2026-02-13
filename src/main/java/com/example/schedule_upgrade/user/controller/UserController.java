@@ -22,6 +22,9 @@ public class UserController {
 
     private final UserService userService;
 
+    // 대부분 요청에 HttpSession 을 받아와서 sessionUser 를 확인하는 과정이 추가되었습니다.
+    // 로그인이 꼭 필요한 요청은 sessionUser 가 null 이라면 Exception 으로 처리됩니다.
+
     @PostMapping("/signup")
     ResponseEntity<SignupResponse> signup(@Valid @RequestBody SignupRequest request){
         SignupResponse response = userService.signup(request);
@@ -44,6 +47,10 @@ public class UserController {
         GetUserResponse response = userService.findOne(userId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    // GET 요청에 page의 크기와 번호를 지정할 수 있습니다.
+    // size-> 한 페이지당 몇 개의 정보가 조회되는지 지정
+    // page-> 몇 번째 페이지를 조회할건지 지정
 
     @GetMapping("/users")
     public ResponseEntity<List<GetUserResponse>> getAll(

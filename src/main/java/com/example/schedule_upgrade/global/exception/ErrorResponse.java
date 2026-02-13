@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class ErrorResponse {
+    // Error Response 형태를 지정해주기
+    // Frontend 에서 오류 출력 시 편해짐!
     private final LocalDateTime timestamp; // 언제?
     private final int status;              // HTTP 상태 코드 (400, 404 등)
     private final String error;            // 에러 이름 (BAD_REQUEST)

@@ -25,6 +25,9 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String pw;
 
+    // 양방향 매핑은 구현하지 않았습니다.
+    // User 는 자신이 작성한 글이나 댓글을 확인할 때 추가적인 로직이 필요합니다.
+
     public User(String name, String email, String pw) {
         this.name = name;
         this.email = email;
