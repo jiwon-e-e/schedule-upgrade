@@ -6,6 +6,7 @@ import com.example.schedule_upgrade.user.dto.*;
 import com.example.schedule_upgrade.user.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -36,6 +37,12 @@ public class UserController {
         session.setAttribute("loginUser", sessionUser);
         session.setMaxInactiveInterval(120);
         return ResponseEntity.status(HttpStatus.OK).body("로그인에 성공했습니다.");
+    }
+
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<GetUserResponse> getOne(@PathVariable Long userId){
+        GetUserResponse response = userService.findOne(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/users")

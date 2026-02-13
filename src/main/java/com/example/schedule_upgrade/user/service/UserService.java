@@ -105,4 +105,17 @@ public class UserService {
 
         userRepository.delete(user);
     }
+
+    @Transactional(readOnly = true)
+    public GetUserResponse findOne(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(
+                ()->new ServiceException(ErrorCode.USER_NOT_FOUND)
+        );
+
+        return new GetUserResponse(
+                user.getId(),
+                user.getName(),
+                user.getEmail()
+        );
+    }
 }
