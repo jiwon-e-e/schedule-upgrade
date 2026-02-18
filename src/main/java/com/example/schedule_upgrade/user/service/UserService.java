@@ -133,4 +133,11 @@ public class UserService {
                 user.getEmail()
         );
     }
+
+    // Optional 처리를 끝낸 User return
+    public User getUserById(Long userId){
+        return userRepository.findById(userId).orElseThrow(
+                ()->new ServiceException(ErrorCode.USER_NOT_FOUND)
+        );
+    }
 }
