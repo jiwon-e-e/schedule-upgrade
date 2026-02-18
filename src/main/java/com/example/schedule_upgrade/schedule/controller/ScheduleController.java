@@ -27,6 +27,7 @@ public class ScheduleController {
             (@Valid @RequestBody CreateScheduleRequest request,
              HttpSession session){
 
+        // 이미 sessionUser 가 존재한다는... 걸 검사함
         SessionUser sessionUser = (SessionUser) session.getAttribute("loginUser");
         if( sessionUser == null){
             throw new ServiceException(ErrorCode.BEFORE_LOGIN);

@@ -8,9 +8,10 @@ import com.example.schedule_upgrade.comment.repository.CommentRepository;
 import com.example.schedule_upgrade.global.exception.ErrorCode;
 import com.example.schedule_upgrade.global.exception.ServiceException;
 import com.example.schedule_upgrade.schedule.entity.Schedule;
-import com.example.schedule_upgrade.schedule.repository.ScheduleRepository;
+import com.example.schedule_upgrade.schedule.service.ScheduleReadService;
+import com.example.schedule_upgrade.schedule.service.ScheduleService;
 import com.example.schedule_upgrade.user.entity.User;
-import com.example.schedule_upgrade.user.repository.UserRepository;
+import com.example.schedule_upgrade.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,20 +27,27 @@ import java.util.List;
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    private final UserRepository userRepository;
-    private final ScheduleRepository scheduleRepository;
+//    private final UserRepository userRepository;
+//    private final ScheduleRepository scheduleRepository;
+
+    private final ScheduleReadService scheduleReadService;
+    private final UserService userService;
 
     @Transactional
     public CreateCommentResponse createComment(Long scheduleId, CreateCommentRequest request, Long sessionUserId) {
         // PathVariable 로 받은 schedule ID 로 schedule 조회
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                ()->new ServiceException(ErrorCode.SCHEDULE_NOT_FOUND)
-        );
+//        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
+//                ()->new ServiceException(ErrorCode.SCHEDULE_NOT_FOUND)
+//        );
+
+        Schedule schedule = scheduleReadService.getScheduleById(scheduleId);
 
         // Session User 에서 받아온 정보를 통해 user 조회
-        User user = userRepository.findById(sessionUserId).orElseThrow(
-                ()->new ServiceException(ErrorCode.BEFORE_LOGIN)
-        );
+//        User user = userRepository.findById(sessionUserId).orElseThrow(
+//                ()->new ServiceException(ErrorCode.BEFORE_LOGIN)
+//        );
+
+        User user = userService.getUserById(sessionUserId);
 
         Comment comment = new Comment(
                 request.getContent(),
@@ -60,13 +68,19 @@ public class CommentService {
     @Transactional
     public List<GetCommentResponse> getAll(Long scheduleId, int page, int size) {
         // PathVariable 로 받은 schedule ID 로 schedule 조회
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                ()->new ServiceException(ErrorCode.SCHEDULE_NOT_FOUND)
-        );
+//        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
+//                ()->new ServiceException(ErrorCode.SCHEDULE_NOT_FOUND)
+//        );
+        //Schedule schedule = scheduleReadService.getScheduleById(scheduleId);
+        if (!scheduleReadService.chkExistScheduleById(scheduleId)){
+            throw new ServiceException(ErrorCode.SCHEDULE_NOT_FOUND);
+        }
 
         // Query parameter 로 받은 page 와 size 를 pageable 의 인수로 사용
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Comment> commentList = commentRepository.findAllBySchedule_Id(schedule.getId(), pageable);
+//        Pageable pageable = PageRequest.of(page, size);
+//        Page<Comment> commentList = commentRepository.findAllBySchedule_Id(schedule.getId(), pageable);
+
+        Page<Comment> commentList = getCommentList(scheduleId, page, size);
 
         List<GetCommentResponse> dtos = new ArrayList<>();
         for (Comment comment : commentList) {
@@ -84,9 +98,13 @@ public class CommentService {
     @Transactional
     public void delete(Long scheduleId, Long commentId, Long sessionUserId) {
         // 만약 일정 삭제시 댓글도 다 삭제되면 이 부분 없어도 됨
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                ()->new ServiceException(ErrorCode.SCHEDULE_NOT_FOUND)
-        );
+//        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
+//                ()->new ServiceException(ErrorCode.SCHEDULE_NOT_FOUND)
+//        );
+
+        if(!scheduleReadService.chkExistScheduleById(scheduleId)){
+            throw new ServiceException(ErrorCode.SCHEDULE_NOT_FOUND);
+        }
 
         // PathVariable 로 받은 comment ID 로 comment 조회
         Comment comment = commentRepository.findById(commentId).orElseThrow(
@@ -100,5 +118,14 @@ public class CommentService {
         }
 
         commentRepository.delete(comment);
+    }
+
+    public int getCommentCountByScheduleId(Long scheduleId){
+        return commentRepository.countBySchedule_Id(scheduleId);
+    }
+
+    public Page<Comment> getCommentList(Long scheduleId, int page, int size){
+        Pageable pageable = PageRequest.of(page, size);
+        return commentRepository.findAllBySchedule_Id(scheduleId,pageable);
     }
 }

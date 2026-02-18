@@ -3,6 +3,7 @@ package com.example.schedule_upgrade.schedule.service;
 import com.example.schedule_upgrade.comment.dto.GetCommentResponse;
 import com.example.schedule_upgrade.comment.entity.Comment;
 import com.example.schedule_upgrade.comment.repository.CommentRepository;
+import com.example.schedule_upgrade.comment.service.CommentService;
 import com.example.schedule_upgrade.global.exception.ErrorCode;
 import com.example.schedule_upgrade.global.exception.ServiceException;
 import com.example.schedule_upgrade.schedule.dto.*;
@@ -10,6 +11,7 @@ import com.example.schedule_upgrade.schedule.entity.Schedule;
 import com.example.schedule_upgrade.schedule.repository.ScheduleRepository;
 import com.example.schedule_upgrade.user.entity.User;
 import com.example.schedule_upgrade.user.repository.UserRepository;
+import com.example.schedule_upgrade.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,15 +28,21 @@ import java.util.List;
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
-    private final UserRepository userRepository;
-    private final CommentRepository commentRepository;
+    private final ScheduleReadService scheduleReadService;
+//    private final UserRepository userRepository;
+//    private final CommentRepository commentRepository;
+
+    private final UserService userService;
+    private final CommentService commentService;
 
     @Transactional
     public CreateScheduleResponse createSchedule(CreateScheduleRequest request, Long sessionUserId) {
         // Session User 에서 받아온 정보를 통해 user 조회
-        User user = userRepository.findById(sessionUserId).orElseThrow(
-                ()->new ServiceException(ErrorCode.BEFORE_LOGIN)
-        );
+//        User user = userRepository.findById(sessionUserId).orElseThrow(
+//                ()->new ServiceException(ErrorCode.BEFORE_LOGIN)
+//        );
+
+        User user = userService.getUserById(sessionUserId);
 
         Schedule schedule = new Schedule(
                 request.getTitle(),
@@ -63,7 +71,8 @@ public class ScheduleService {
 
         for (Schedule schedule : schedules) {
             // Schedule 에 달린 Comment 의 개수를 가져옴
-            int commentCount = commentRepository.countBySchedule_Id(schedule.getId());
+            //int commentCount = commentRepository.countBySchedule_Id(schedule.getId());
+            int commentCount = commentService.getCommentCountByScheduleId(schedule.getId());
             GetSchedulesResponse dto = new GetSchedulesResponse(
                     schedule.getId(),
                     schedule.getTitle(),
@@ -78,14 +87,16 @@ public class ScheduleService {
     public GetOneScheduleResponse findOne(Long scheduleId, int page, int size) {
 
         // PathVariable 로 받은 schedule ID 로 schedule 조회
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                ()-> new ServiceException(ErrorCode.SCHEDULE_NOT_FOUND)
-        );
+//        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
+//                ()-> new ServiceException(ErrorCode.SCHEDULE_NOT_FOUND)
+//        );
+        Schedule schedule = scheduleReadService.getScheduleById(scheduleId);
 
         // Query parameter 로 받은 page 와 size 를 pageable 의 인수로 사용
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Comment> commentList = commentRepository.findAllBySchedule_Id(schedule.getId(),pageable);
+//        Pageable pageable = PageRequest.of(page, size);
+//        Page<Comment> commentList = commentRepository.findAllBySchedule_Id(schedule.getId(),pageable);
 
+        Page<Comment> commentList = commentService.getCommentList(scheduleId, page, size);
         //GetCommentResponse 를 다시 만들어주고
         List<GetCommentResponse> dtos = new ArrayList<>();
         for (Comment comment : commentList) {
@@ -113,9 +124,10 @@ public class ScheduleService {
     @Transactional
     public UpdateScheduleResponse update( Long scheduleId, UpdateScheduleRequest request, Long sessionUserId) {
         // PathVariable 로 받은 schedule ID 로 schedule 조회
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                ()-> new ServiceException(ErrorCode.SCHEDULE_NOT_FOUND)
-        );
+//        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
+//                ()-> new ServiceException(ErrorCode.SCHEDULE_NOT_FOUND)
+//        );
+        Schedule schedule = scheduleReadService.getScheduleById(scheduleId);
 
         // 수정하려는 유저가 실제 schedule 의 작성자인지 확인
         // 아니라면 작성자 mismatch Exception 처리
@@ -138,9 +150,10 @@ public class ScheduleService {
     public void delete(@Valid Long scheduleId, Long sessionUserId) {
 
         // PathVariable 로 받은 schedule ID 로 schedule 조회
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
-                ()-> new ServiceException(ErrorCode.SCHEDULE_NOT_FOUND)
-        );
+//        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
+//                ()-> new ServiceException(ErrorCode.SCHEDULE_NOT_FOUND)
+//        );
+        Schedule schedule = scheduleReadService.getScheduleById(scheduleId);
 
         // 삭제하려는 유저가 실제 schedule 의 작성자인지 확인
         // 아니라면 작성자 mismatch Exception 처리
